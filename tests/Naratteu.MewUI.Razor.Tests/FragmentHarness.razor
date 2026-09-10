@@ -1,0 +1,14 @@
+@inherits HookComponent
+@{
+    var (n, setN) = UseState(0);
+}
+
+<MewStackPanel>
+    @Row($"n={n}")
+    @Row("static")
+</MewStackPanel>
+
+@code {
+    // A Razor template expression: this really is a RenderFragment written inline in C#.
+    private RenderFragment Row(string text) => @<MewTextBlock Text="@text" />;
+}

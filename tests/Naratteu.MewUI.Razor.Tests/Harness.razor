@@ -1,0 +1,29 @@
+@* Exercises the three structural cases a diff can produce: value update, conditional
+   insert/remove, and a growing/shrinking list. *@
+<MewStackPanel Spacing="4">
+    <MewTextBlock Text="@($"n={_n}")" />
+
+    @if (_n >= 2)
+    {
+        <MewTextBlock Text="conditional" />
+    }
+
+    @foreach (var i in Enumerable.Range(0, _n))
+    {
+        <MewButton Text="@($"btn{i}")" />
+    }
+</MewStackPanel>
+
+@code {
+    private int _n;
+
+    public static Harness? Current { get; private set; }
+
+    protected override void OnInitialized() => Current = this;
+
+    public void SetN(int n)
+    {
+        _n = n;
+        StateHasChanged();
+    }
+}

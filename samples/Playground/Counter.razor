@@ -1,0 +1,24 @@
+@inherits HookComponent
+@{
+    var (name, setName) = UseState("world");
+    var (count, setCount) = UseState(0);
+}
+
+<MewStackPanel Spacing="12" Margin="new Thickness(20)">
+    <MewTextBlock Text="@($"Hello, {name}!")" FontSize="20" FontWeight="FontWeight.Bold" />
+
+    <MewTextBox Value="@name" ValueChanged="setName" />
+
+    <MewButton Text="Increment" OnClick="@(() => setCount(count + 1))" />
+    <MewTextBlock Text="@($"count = {count}")" />
+
+    @if (count >= 3)
+    {
+        <MewTextBlock Text="conditional rendering works" FontSize="12" Foreground="Color.Gray" />
+    }
+
+    @foreach (var i in Enumerable.Range(0, count))
+    {
+        <MewTextBlock Text="@($"  · item {i}")" FontSize="12" />
+    }
+</MewStackPanel>

@@ -1,0 +1,10 @@
+@* Hook-idiomatic two-way binding: state in, setter out. *@
+@inherits HookComponent
+@{
+    var (name, setName) = UseState("");
+}
+
+<MewStackPanel>
+    <MewTextBox Value="@name" ValueChanged="setName" />
+    <MewTextBlock Text="@($"hello {name}")" />
+</MewStackPanel>

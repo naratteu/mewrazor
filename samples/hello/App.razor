@@ -1,0 +1,11 @@
+@inherits HookComponent
+@{
+    var (name, setName) = UseState("world");
+}
+
+<MewWindow Title="Hello MewRazor" Width="420" Height="240">
+    <MewStackPanel Spacing="12" Margin="new Thickness(20)">
+        <MewTextBlock Text="@($"Hello, {name}!")" FontSize="22" FontWeight="FontWeight.Bold" />
+        <MewTextBox Value="@name" ValueChanged="setName" />
+    </MewStackPanel>
+</MewWindow>

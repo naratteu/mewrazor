@@ -1,0 +1,12 @@
+@* None of these components were hand-written: they exist only because the generator read
+   MewUI's metadata. *@
+@inherits HookComponent
+@{
+    var (checkedState, setChecked) = UseState<bool?>(false);
+}
+
+<MewGrid Spacing="6" ShowGridLine="true">
+    <MewCheckBox IsChecked="@checkedState" OnCheckedChanged="setChecked" />
+    <MewLabel Text="@($"checked = {checkedState}")" TextWrapping="TextWrapping.NoWrap" />
+    <MewBorder ClipToBounds="true" CornerRadius="4" />
+</MewGrid>

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Playground/Playground.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Naratteu.MewUI.Razor.Generator/Naratteu.MewUI.Razor.Generator.csproj" />
+    <Project Path="src/Naratteu.MewUI.Razor/Naratteu.MewUI.Razor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Naratteu.MewUI.Razor.Tests/Naratteu.MewUI.Razor.Tests.csproj" />
+  </Folder>
+</Solution>

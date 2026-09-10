@@ -1,0 +1,9 @@
+@* Classic Blazor form: @bind-Value against a field. *@
+<MewStackPanel>
+    <MewTextBox @bind-Value="_name" />
+    <MewTextBlock Text="@($"hello {_name}")" />
+</MewStackPanel>
+
+@code {
+    private string _name = "";
+}

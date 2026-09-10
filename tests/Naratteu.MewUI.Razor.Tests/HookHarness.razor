@@ -1,0 +1,22 @@
+@inherits HookComponent
+@{
+    var (count, setCount) = UseState(0);
+    var (label, setLabel) = UseState("idle");
+
+    Probe = () => { setCount(count + 1); setLabel($"clicked {count + 1}"); };
+}
+
+<MewStackPanel>
+    <MewTextBlock Text="@($"count={count}")" />
+    <MewTextBlock Text="@label" />
+
+    @foreach (var i in Enumerable.Range(0, count))
+    {
+        <MewButton Text="@($"btn{i}")" />
+    }
+</MewStackPanel>
+
+@code {
+    // Stands in for a click: a closure over this render's state, exactly like an event handler.
+    public static Action Probe { get; set; } = () => { };
+}

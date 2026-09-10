@@ -1,0 +1,22 @@
+{
+  "extraKnownMarketplaces": {
+    "aprillz": {
+      "source": {
+        "source": "github",
+        "repo": "aprillz/mewui-skill"
+      }
+    },
+    "dotnet-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "dotnet/skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "mewui@aprillz": true,
+    "dotnet@dotnet-agent-skills": true,
+    "dotnet-blazor@dotnet-agent-skills": true,
+    "dotnet-msbuild@dotnet-agent-skills": true
+  }
+}
