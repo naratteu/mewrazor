@@ -1,7 +1,17 @@
+@inherits HookComponent
 @* Every tag here must resolve to a component compiled into the package, not to one the
-   consumer regenerated for itself. *@
-<MewStackPanel Spacing="8" Margin="new Thickness(4)">
+   consumer regenerated for itself, and every hook must come from the packaged assembly. *@
+@{
+    var (items, _) = UseState<string[]>(["one", "two"]);
+
+    var view = UseMemo(() => ItemsView.Create(items), items);
+
+    UseEffect(() => { }, items);
+}
+
+<MewStackPanel Spacing="8" Margin="4">
     <MewTextBlock Text="packaged" FontWeight="FontWeight.Bold" />
     <MewButton Text="ok" />
+    <MewListBox ItemsSource="view" />
     <MewGridView />
 </MewStackPanel>
