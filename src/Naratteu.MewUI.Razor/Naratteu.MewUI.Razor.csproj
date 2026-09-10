@@ -4,9 +4,13 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- BL0006: RenderTree types carry no stability guarantee outside Blazor. Depending on them
+         is the whole design, so the warning is acknowledged once here instead of at every use. -->
+    <NoWarn>$(NoWarn);BL0006</NoWarn>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 
     <PackageId>Naratteu.MewUI.Razor</PackageId>
+    <Version>0.1.0-preview.1</Version>
     <Description>Write MewUI desktop applications as Razor components.</Description>
     <Authors>naratteu</Authors>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -18,9 +22,6 @@
   <ItemGroup>
     <None Include="../../LICENSE" Pack="true" PackagePath="/" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
-    <!-- The generator ships inside the package so consumers get the components. -->
-    <None Include="../Naratteu.MewUI.Razor.Generator/bin/$(Configuration)/netstandard2.0/Naratteu.MewUI.Razor.Generator.dll"
-          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Build-time only, and deliberately NOT packed: the components it produces are already
+         compiled into this assembly. Shipping it as an analyzer makes it run again in every
+         consumer, duplicating all 69 components and shadowing the hand-written partials. -->
     <ProjectReference Include="../Naratteu.MewUI.Razor.Generator/Naratteu.MewUI.Razor.Generator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
