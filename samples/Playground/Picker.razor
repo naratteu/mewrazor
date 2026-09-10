@@ -1,0 +1,17 @@
+@inherits HookComponent
+@{
+    var (items, _) = UseState<string[]>(["alpha", "beta", "gamma", "delta"]);
+    var (selected, setSelected) = UseState("(none)");
+
+    // Rebuilt only when the items change. Handing the control a new source on every render
+    // would reset whatever the user had selected.
+    var view = UseMemo(() => ItemsView.Create(items), items);
+}
+
+<MewStackPanel Spacing="8" Margin="20">
+    <MewTextBlock Text="@($"selected = {selected}")" />
+
+    <MewListBox ItemsSource="view"
+                Height="100"
+                OnSelectionChanged="@(item => setSelected(item?.ToString() ?? "(none)"))" />
+</MewStackPanel>

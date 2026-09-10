@@ -25,6 +25,18 @@ public sealed class MewComponentGenerator : IIncrementalGenerator
         "Aprillz.MewUI.Thickness", "Aprillz.MewUI.Color", "Aprillz.MewUI.Size", "Aprillz.MewUI.Point",
     ];
 
+    /// <summary>
+    /// Reference types a view can hand a control. These are MewUI's own data abstractions, not
+    /// controls: an <c>Element</c>-typed property would fight the child content the renderer
+    /// already attaches, so only the data side is exposed.
+    /// </summary>
+    private static readonly ImmutableHashSet<string> SupportedReferenceTypes =
+    [
+        "Aprillz.MewUI.IItemsView", "Aprillz.MewUI.ISelectableItemsView",
+        "Aprillz.MewUI.IMultiSelectableItemsView", "Aprillz.MewUI.ITreeItemsView",
+        "Aprillz.MewUI.Controls.IDataTemplate",
+    ];
+
     /// <summary>Names owned by the component base classes.</summary>
     private static readonly ImmutableHashSet<string> ReservedNames =
         ["Control", "NativeElement", "ChildContent"];
@@ -160,7 +172,10 @@ public sealed class MewComponentGenerator : IIncrementalGenerator
 
         if (type.TypeKind == TypeKind.Enum) return type;
         if (SupportedSpecialTypes.Contains(type.SpecialType)) return type;
-        if (SupportedValueTypes.Contains(type.ToDisplayString())) return type;
+
+        var name = type.ToDisplayString();
+        if (SupportedValueTypes.Contains(name)) return type;
+        if (SupportedReferenceTypes.Contains(name)) return type;
         return null;
     }
 

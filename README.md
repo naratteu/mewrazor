@@ -155,6 +155,31 @@ One difference from React is worth knowing. A parameter read inside the effect i
 component, so by the time the cleanup runs it already holds the *new* value. Copy what the
 cleanup needs into a local in the body — `var channel = Channel;` — and close over that.
 
+### Collections
+
+MewUI's collection controls are data driven: a `ListBox`, `ComboBox`, `GridView` or `TreeView`
+takes an items view, not child controls. The view is a parameter like any other:
+
+```razor
+@{
+    var (items, setItems) = UseState<string[]>(["alpha", "beta", "gamma"]);
+    var (selected, setSelected) = UseState("(none)");
+
+    var view = UseMemo(() => ItemsView.Create(items), items);
+}
+
+<MewListBox ItemsSource="view"
+            OnSelectionChanged="@(item => setSelected(item?.ToString() ?? "(none)"))" />
+```
+
+`UseMemo` is what keeps that correct. Built inline, the view would be a new object on every
+render, and replacing a control's source resets what the user had selected — so it is rebuilt
+only when the items change.
+
+Rows are built by MewUI's `IDataTemplate`, which is also a parameter (`ItemTemplate="template"`).
+A `RenderFragment` is not a data template: what a template builds is bound and recycled by the
+control, not diffed by Blazor.
+
 ## Controls
 
 Components are generated from MewUI's own metadata, so the control library is covered rather
@@ -199,17 +224,15 @@ which does the same thing for .NET MAUI.
 
 ## Not done yet
 
-**Collection controls take no items.** `ListBox`, `GridView`, `ComboBox`, `TreeView` and
-`NavigationView` are generated and will happily appear in completion, but their item properties
-are `IReadOnlyList<T>`, which is outside the generated parameter surface. They work as
-containers and nothing else. Modelling items as child components is a design question, not a
-filter tweak — see [#3](https://github.com/naratteu/mewrazor/issues/3).
+**`TabControl` and `NavigationView` take no items.** Every other collection control has an
+assignable `ItemsSource` and is covered above, but tabs and navigation panes are exposed as
+read-only collections (`Tabs`, `Pane`) that are filled by mutation, so there is nothing a view can
+hand them. Modelling those as child components is a design question, not a filter tweak — see
+[#7](https://github.com/naratteu/mewrazor/issues/7).
 
-Smaller gaps:
-
-- An attribute matching no parameter compiles and only fails when the component renders. That
-  is Blazor's behaviour rather than something this library adds
-  ([#4](https://github.com/naratteu/mewrazor/issues/4)).
+One smaller gap: an attribute matching no parameter compiles, and only fails when the component
+renders. That is Blazor's behaviour rather than something this library adds
+([#4](https://github.com/naratteu/mewrazor/issues/4)).
 
 This library builds on `Microsoft.AspNetCore.Components.RenderTree`, which Microsoft marks with
 `BL0006`: not recommended outside Blazor, and subject to change between releases. That is the

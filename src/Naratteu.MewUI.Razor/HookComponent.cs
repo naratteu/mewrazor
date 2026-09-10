@@ -37,7 +37,7 @@ public abstract class HookComponent : IComponent, IHandleAfterRender, IDisposabl
     {
         if (_cursor == _slots.Count) _slots.Add(initial);
         var slot = _cursor++;
-        if (_slots[slot] is EffectSlot) throw OutOfOrder(slot, "UseState");
+        if (_slots[slot] is HookSlot) throw OutOfOrder(slot, "UseState");
 
         return ((T)_slots[slot]!, next =>
         {
@@ -45,6 +45,27 @@ public abstract class HookComponent : IComponent, IHandleAfterRender, IDisposabl
             _slots[slot] = next;
             Render();
         });
+    }
+
+    /// <summary>
+    /// Keeps one value across renders and rebuilds it only when <paramref name="dependencies"/>
+    /// change. A control that takes a data source needs this: handing it a freshly built items
+    /// view on every render replaces the source, and with it whatever the user had selected.
+    /// </summary>
+    protected T UseMemo<T>(Func<T> create, params object?[] dependencies)
+    {
+        if (_cursor == _slots.Count) _slots.Add(new MemoSlot());
+        var index = _cursor++;
+        if (_slots[index] is not MemoSlot slot) throw OutOfOrder(index, "UseMemo");
+
+        if (!slot.Created || !Unchanged(slot.Dependencies, dependencies))
+        {
+            slot.Dependencies = dependencies;
+            slot.Value = create();
+            slot.Created = true;
+        }
+
+        return (T)slot.Value!;
     }
 
     /// <summary>
@@ -137,11 +158,22 @@ public abstract class HookComponent : IComponent, IHandleAfterRender, IDisposabl
         + "reached it this time. Hooks are identified by call order, so they must not run inside "
         + "a conditional, a loop, or an early return.");
 
-    private sealed class EffectSlot
+    /// <summary>A slot holding something other than a plain <see cref="UseState{T}"/> value.</summary>
+    private abstract class HookSlot
+    {
+        public object?[] Dependencies { get; set; } = [];
+    }
+
+    private sealed class MemoSlot : HookSlot
+    {
+        public bool Created { get; set; }
+
+        public object? Value { get; set; }
+    }
+
+    private sealed class EffectSlot : HookSlot
     {
         public bool Scheduled { get; set; }
-
-        public object?[] Dependencies { get; set; } = [];
 
         public Func<Action?>? Next { get; set; }
 

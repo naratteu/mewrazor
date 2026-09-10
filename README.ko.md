@@ -153,6 +153,30 @@ React와 다른 점이 하나 있습니다. 이펙트 안에서 파라미터를 
 정리가 실행될 시점에는 이미 **새 값**이 들어있습니다. 정리에 필요한 값은 본문에서 지역 변수로
 받아두고(`var channel = Channel;`) 그걸 캡쳐하세요.
 
+### 컬렉션
+
+MewUI의 컬렉션 컨트롤은 데이터 기반입니다. `ListBox`, `ComboBox`, `GridView`, `TreeView`는 자식
+컨트롤이 아니라 items view를 받습니다. 그 view는 여느 파라미터와 똑같습니다:
+
+```razor
+@{
+    var (items, setItems) = UseState<string[]>(["alpha", "beta", "gamma"]);
+    var (selected, setSelected) = UseState("(none)");
+
+    var view = UseMemo(() => ItemsView.Create(items), items);
+}
+
+<MewListBox ItemsSource="view"
+            OnSelectionChanged="@(item => setSelected(item?.ToString() ?? "(none)"))" />
+```
+
+여기서 `UseMemo`가 핵심입니다. 인라인으로 만들면 매 렌더마다 새 객체가 되고, 컨트롤의 소스를
+갈아끼우면 사용자가 골라둔 선택이 초기화됩니다. 그래서 항목이 바뀔 때만 다시 만듭니다.
+
+행(row)은 MewUI의 `IDataTemplate`이 만들며, 이것도 파라미터입니다(`ItemTemplate="template"`).
+`RenderFragment`는 데이터 템플릿이 아닙니다 — 템플릿이 만든 것은 컨트롤이 바인딩하고 재활용하지,
+Blazor가 diff하지 않습니다.
+
 ## 컨트롤
 
 컴포넌트는 MewUI 메타데이터에서 생성되므로 골라 담은 게 아니라 라이브러리 전체가 덮입니다 —
@@ -197,16 +221,15 @@ HTML 엘리먼트를 쓰면 조용히 넘어가지 않고 명확한 에러가 �
 
 ## 아직 안 된 것
 
-**컬렉션 컨트롤에 항목을 넣을 수 없습니다.** `ListBox`, `GridView`, `ComboBox`, `TreeView`,
-`NavigationView`가 생성돼 있고 자동 완성에도 뜨지만, 항목 프로퍼티가 `IReadOnlyList<T>`라
-생성 대상 파라미터 밖입니다. 컨테이너로만 동작합니다. 항목을 자식 컴포넌트로 표현하는 건 필터를
-손보는 문제가 아니라 설계 문제입니다 — [#3](https://github.com/naratteu/mewrazor/issues/3).
+**`TabControl`과 `NavigationView`에는 항목을 넣을 수 없습니다.** 다른 컬렉션 컨트롤은 전부
+`ItemsSource`를 받고 위에서 다뤘지만, 탭과 내비게이션 페인은 대입이 아니라 조작으로 채우는
+읽기 전용 컬렉션(`Tabs`, `Pane`)입니다. view가 건넬 자리가 없습니다. 이 둘을 자식 컴포넌트로
+표현하는 건 필터를 손보는 문제가 아니라 설계 문제입니다 —
+[#7](https://github.com/naratteu/mewrazor/issues/7).
 
-그 외 작은 공백:
-
-- 존재하지 않는 파라미터를 써도 컴파일은 통과하고 렌더링 시점에야 실패합니다. 이 라이브러리가
-  더한 문제가 아니라 Blazor의 동작입니다
-  ([#4](https://github.com/naratteu/mewrazor/issues/4)).
+작은 공백이 하나 더 있습니다. 존재하지 않는 파라미터를 써도 컴파일은 통과하고 렌더링 시점에야
+실패합니다. 이 라이브러리가 더한 문제가 아니라 Blazor의 동작입니다
+([#4](https://github.com/naratteu/mewrazor/issues/4)).
 
 이 라이브러리는 `Microsoft.AspNetCore.Components.RenderTree` 위에 서 있고, Microsoft는 여기에
 `BL0006`을 붙여둡니다 — Blazor 바깥에서 쓰는 것을 권장하지 않으며 릴리스마다 바뀔 수 있다는

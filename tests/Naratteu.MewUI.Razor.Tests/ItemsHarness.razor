@@ -1,0 +1,28 @@
+@inherits HookComponent
+@using Aprillz.MewUI.Controls
+@{
+    var (items, setItems) = UseState<string[]>(["alpha", "beta", "gamma"]);
+    var (nudge, setNudge) = UseState(0);
+
+    // Rebuilt only when the items themselves change, so a re-render for any other reason does
+    // not hand the control a new source.
+    var view = UseMemo(() => ItemsView.Create(items), items);
+
+    // MewUI's own template type: the rows are built by MewUI, not by the Razor diff.
+    var template = UseMemo(() => new DelegateTemplate<string>(
+        _ => new Aprillz.MewUI.Controls.TextBlock(),
+        (view, item, index, _) => ((Aprillz.MewUI.Controls.TextBlock)view).Text = $"{index}: {item}"));
+
+    Append = () => setItems([.. items, "delta"]);
+    Rerender = () => setNudge(nudge + 1);
+}
+
+<MewStackPanel>
+    <MewListBox ItemsSource="view" ItemTemplate="template" />
+</MewStackPanel>
+
+@code {
+    public static Action Append { get; set; } = () => { };
+
+    public static Action Rerender { get; set; } = () => { };
+}
