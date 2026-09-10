@@ -13,6 +13,12 @@
   <ItemGroup>
     <PackageReference Include="Aprillz.MewUI.MacOS" Version="0.21.1" />
     <ProjectReference Include="../../src/Naratteu.MewUI.Razor/Naratteu.MewUI.Razor.csproj" />
+
+    <!-- A package reference would bring this along on its own; a project reference does not,
+         so the sample asks for the same build-time checking a consumer gets. -->
+    <ProjectReference Include="../../src/Naratteu.MewUI.Razor.Analyzers/Naratteu.MewUI.Razor.Analyzers.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

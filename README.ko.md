@@ -199,6 +199,16 @@ public 설정 가능 프로퍼티는 파라미터가 되고, `Action` / `Action<
 균일한 `Thickness`입니다 — `Thickness`가 `double`에서 변환되기 때문입니다. 면마다 값이 다르면
 생성자가 필요합니다: `Padding="new Thickness(4, 8)"`.
 
+존재하지 않는 파라미터를 쓰면 빌드가 실패합니다. 위치는 `.razor` 파일의 해당 줄입니다:
+
+```
+View.razor(4,19): error MEW001: 'Bold' is not a parameter of MewTextBlock
+```
+
+Blazor는 이걸 컴포넌트가 렌더링될 때에야 발견하고, 데스크톱 앱에서 그건 첫 프레임에서의 크래시를
+뜻합니다. 패키지에는 생성된 렌더 트리를 읽어 각 속성을 그 컴포넌트와 대조하는 애널라이저가
+들어 있어서, 같은 실수가 빌드에서 걸립니다. `<NoWarn>MEW001</NoWarn>`으로 끌 수 있습니다.
+
 생성된 컴포넌트는 전부 `partial`이고 `OnControlCreated`, `ApplyCustomParameters` 훅을 열어둡니다.
 메타데이터로 표현할 수 없는 것 세 가지가 그 훅으로 들어가 있습니다 — 창 크기, `MewTextBox`의
 `@bind-Value`, `MewButton`의 `Text` 축약.
@@ -226,10 +236,6 @@ HTML 엘리먼트를 쓰면 조용히 넘어가지 않고 명확한 에러가 �
 읽기 전용 컬렉션(`Tabs`, `Pane`)입니다. view가 건넬 자리가 없습니다. 이 둘을 자식 컴포넌트로
 표현하는 건 필터를 손보는 문제가 아니라 설계 문제입니다 —
 [#7](https://github.com/naratteu/mewrazor/issues/7).
-
-작은 공백이 하나 더 있습니다. 존재하지 않는 파라미터를 써도 컴파일은 통과하고 렌더링 시점에야
-실패합니다. 이 라이브러리가 더한 문제가 아니라 Blazor의 동작입니다
-([#4](https://github.com/naratteu/mewrazor/issues/4)).
 
 이 라이브러리는 `Microsoft.AspNetCore.Components.RenderTree` 위에 서 있고, Microsoft는 여기에
 `BL0006`을 붙여둡니다 — Blazor 바깥에서 쓰는 것을 권장하지 않으며 릴리스마다 바뀔 수 있다는

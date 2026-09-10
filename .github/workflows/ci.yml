@@ -27,6 +27,21 @@ jobs:
       - name: Pack
         run: dotnet pack src/Naratteu.MewUI.Razor -c Release -o artifacts
 
+      - name: Verify the analyzer rejects an attribute that matches no parameter
+        # MEW001 only earns its severity if it actually fires from the packaged analyzer.
+        run: |
+          cd eng/analyzertest
+          if dotnet build bad.cs > build.log 2>&1; then
+            cat build.log
+            echo "::error::MEW001 did not fire on an unknown attribute"
+            exit 1
+          fi
+          grep -q "View.razor.*MEW001" build.log || {
+            cat build.log
+            echo "::error::the build failed, but not with MEW001 pointing at the .razor file"
+            exit 1
+          }
+
       - name: Verify the package produces working components
         # Guards against the generator being packed again. If it were, it would run in the
         # consumer's own compilation, duplicate every component, and shadow the hand-written

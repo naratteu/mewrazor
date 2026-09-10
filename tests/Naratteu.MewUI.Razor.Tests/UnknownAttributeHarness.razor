@@ -1,4 +1,5 @@
-@* 'Bold' is not a parameter of MewTextBlock. Razor compiles it; Blazor rejects it at runtime. *@
+@* 'Bold' is not a parameter of MewTextBlock. Razor compiles it; Blazor rejects it at runtime.
+   MEW001 catches this at build time, which is why this project does not reference the analyzer. *@
 <MewStackPanel>
     <MewTextBlock Text="x" Bold="true" />
 </MewStackPanel>

@@ -3,8 +3,9 @@ using Aprillz.MewUI.Controls;
 namespace Naratteu.MewUI.Razor.Tests;
 
 /// <summary>
-/// Documents a real gap: an attribute that matches no parameter compiles cleanly and only
-/// fails when the component renders.
+/// The behaviour MEW001 exists to prevent. This project does not reference the analyzer, so the
+/// harness still compiles and the runtime failure it produces stays visible: without the build-time
+/// check, an attribute that matches no parameter throws when the component renders.
 /// </summary>
 public class UnknownAttributeTests
 {

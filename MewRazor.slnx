@@ -3,6 +3,7 @@
     <Project Path="samples/Playground/Playground.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Naratteu.MewUI.Razor.Analyzers/Naratteu.MewUI.Razor.Analyzers.csproj" />
     <Project Path="src/Naratteu.MewUI.Razor.Generator/Naratteu.MewUI.Razor.Generator.csproj" />
     <Project Path="src/Naratteu.MewUI.Razor/Naratteu.MewUI.Razor.csproj" />
   </Folder>

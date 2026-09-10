@@ -38,6 +38,19 @@
     <ProjectReference Include="../Naratteu.MewUI.Razor.Generator/Naratteu.MewUI.Razor.Generator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
+
+    <!-- Unlike the generator, this one is packed: it produces no code, only diagnostics, and it
+         is only useful in the compilation that writes the .razor files. -->
+    <ProjectReference Include="../Naratteu.MewUI.Razor.Analyzers/Naratteu.MewUI.Razor.Analyzers.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../Naratteu.MewUI.Razor.Analyzers/bin/$(Configuration)/netstandard2.0/Naratteu.MewUI.Razor.Analyzers.dll"
+          Pack="true"
+          PackagePath="analyzers/dotnet/cs"
+          Visible="false" />
   </ItemGroup>
 
 </Project>

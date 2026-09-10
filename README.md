@@ -202,6 +202,18 @@ A parameter takes a C# expression, not a string, so MewUI's own conversions appl
 is a uniform `Thickness`, because `Thickness` converts from a `double`. Sides that differ still
 need the constructor — `Padding="new Thickness(4, 8)"`.
 
+An attribute that matches no parameter is a build error, pointing at the line in the `.razor`
+file:
+
+```
+View.razor(4,19): error MEW001: 'Bold' is not a parameter of MewTextBlock
+```
+
+Blazor discovers that only when the component renders, which for a desktop app is a crash on the
+first frame. The package ships an analyzer that reads the generated render tree and checks each
+attribute against the component it was written on, so the same mistake fails the build instead.
+`<NoWarn>MEW001</NoWarn>` turns it off.
+
 Each generated component is `partial` with `OnControlCreated` and `ApplyCustomParameters` hooks,
 which is how the three hand-written extensions add what metadata cannot express: window sizing,
 `@bind-Value` on `MewTextBox`, and a `Text` shorthand on `MewButton`.
@@ -229,10 +241,6 @@ assignable `ItemsSource` and is covered above, but tabs and navigation panes are
 read-only collections (`Tabs`, `Pane`) that are filled by mutation, so there is nothing a view can
 hand them. Modelling those as child components is a design question, not a filter tweak — see
 [#7](https://github.com/naratteu/mewrazor/issues/7).
-
-One smaller gap: an attribute matching no parameter compiles, and only fails when the component
-renders. That is Blazor's behaviour rather than something this library adds
-([#4](https://github.com/naratteu/mewrazor/issues/4)).
 
 This library builds on `Microsoft.AspNetCore.Components.RenderTree`, which Microsoft marks with
 `BL0006`: not recommended outside Blazor, and subject to change between releases. That is the
