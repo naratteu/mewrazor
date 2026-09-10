@@ -114,6 +114,45 @@ Application
 }
 ```
 
+### 이펙트
+
+타이머, 구독, 파일 감시처럼 한 번의 렌더보다 오래 사는 것은 `UseEffect`로 선언합니다. 렌더가
+컨트롤 트리에 반영된 뒤에 실행되고, 반환한 액션이 정리(cleanup)입니다:
+
+```razor
+@{
+    var (clock, setClock) = UseState("--:--:--");
+
+    UseEffect(() =>
+    {
+        var timer = new DispatcherTimer()
+            .IntervalMs(1000)
+            .OnTick(() => setClock(DateTime.Now.ToString("HH:mm:ss")));
+
+        timer.Start();
+        return () => timer.Stop();
+    });
+}
+```
+
+의존성을 주지 않으면 마운트 때 한 번만 실행되고, 컴포넌트가 트리에서 빠질 때 정리가 실행됩니다.
+의존성을 주면 값이 바뀔 때 다시 실행되며, 그 전에 이전 정리가 먼저 돕니다:
+
+```razor
+UseEffect(() =>
+{
+    var subscription = feed.Subscribe(channel, setMessage);
+    return subscription.Dispose;
+}, channel);
+```
+
+이펙트 안에서 상태를 바꿔도 됩니다. 그 렌더는 평소대로 일어납니다. 그리고 `UseState`와 마찬가지로
+슬롯이 호출 순서라, 이펙트도 조건문이나 반복문 안에서 선언하면 안 됩니다.
+
+React와 다른 점이 하나 있습니다. 이펙트 안에서 파라미터를 읽으면 그건 컴포넌트에서 읽는 것이라,
+정리가 실행될 시점에는 이미 **새 값**이 들어있습니다. 정리에 필요한 값은 본문에서 지역 변수로
+받아두고(`var channel = Channel;`) 그걸 캡쳐하세요.
+
 ## 컨트롤
 
 컴포넌트는 MewUI 메타데이터에서 생성되므로 골라 담은 게 아니라 라이브러리 전체가 덮입니다 —
@@ -161,8 +200,6 @@ HTML 엘리먼트를 쓰면 조용히 넘어가지 않고 명확한 에러가 �
 
 그 외 작은 공백:
 
-- `UseEffect`가 없어서, 무언가를 구독하는 컴포넌트가 해제할 자리가 없습니다
-  ([#2](https://github.com/naratteu/mewrazor/issues/2)).
 - 존재하지 않는 파라미터를 써도 컴파일은 통과하고 렌더링 시점에야 실패합니다. 이 라이브러리가
   더한 문제가 아니라 Blazor의 동작입니다
   ([#4](https://github.com/naratteu/mewrazor/issues/4)).

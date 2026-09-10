@@ -1,0 +1,11 @@
+@inherits HookComponent
+@{
+    var (status, setStatus) = UseState("loading");
+
+    // The mount-time load: an effect that has to be able to put its result back into state.
+    UseEffect(() => setStatus("loaded"));
+}
+
+<MewStackPanel>
+    <MewTextBlock Text="@status" />
+</MewStackPanel>

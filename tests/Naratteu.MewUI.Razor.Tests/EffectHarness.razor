@@ -1,0 +1,33 @@
+@inherits HookComponent
+@using Aprillz.MewUI.Controls
+@{
+    var (channel, setChannel) = UseState("a");
+    var (mounted, setMounted) = UseState(true);
+    var (nudge, setNudge) = UseState(0);
+
+    Switch = next => setChannel(next);
+    Unmount = () => setMounted(false);
+    Rerender = () => setNudge(nudge + 1);
+
+    // Read from inside the child's effect: proves the control is already in the tree by then.
+    ChildCount = () => (_panel?.NativeElement as StackPanel)?.Children.Count ?? -1;
+}
+
+<MewStackPanel @ref="_panel">
+    @if (mounted)
+    {
+        <EffectChild Channel="@channel" Nudge="@nudge" />
+    }
+</MewStackPanel>
+
+@code {
+    private MewStackPanel? _panel;
+
+    public static Action<string> Switch { get; set; } = _ => { };
+
+    public static Action Unmount { get; set; } = () => { };
+
+    public static Action Rerender { get; set; } = () => { };
+
+    public static Func<int> ChildCount { get; set; } = () => -1;
+}

@@ -114,6 +114,47 @@ fields with `@bind-Value`:
 }
 ```
 
+### Effects
+
+Anything that outlives a render — a timer, a subscription, a file watcher — is declared with
+`UseEffect`. It runs once the render has reached the control tree, and the action it returns is
+the cleanup:
+
+```razor
+@{
+    var (clock, setClock) = UseState("--:--:--");
+
+    UseEffect(() =>
+    {
+        var timer = new DispatcherTimer()
+            .IntervalMs(1000)
+            .OnTick(() => setClock(DateTime.Now.ToString("HH:mm:ss")));
+
+        timer.Start();
+        return () => timer.Stop();
+    });
+}
+```
+
+With no dependencies the effect runs once on mount, and its cleanup runs when the component
+leaves the tree. Pass dependencies to re-run it when they change — the previous cleanup runs
+first:
+
+```razor
+UseEffect(() =>
+{
+    var subscription = feed.Subscribe(channel, setMessage);
+    return subscription.Dispose;
+}, channel);
+```
+
+An effect may set state; that render happens normally. And like `UseState`, the slot is call
+order, so an effect must not be declared inside a conditional or a loop.
+
+One difference from React is worth knowing. A parameter read inside the effect is read off the
+component, so by the time the cleanup runs it already holds the *new* value. Copy what the
+cleanup needs into a local in the body — `var channel = Channel;` — and close over that.
+
 ## Controls
 
 Components are generated from MewUI's own metadata, so the control library is covered rather
@@ -162,8 +203,6 @@ filter tweak — see [#3](https://github.com/naratteu/mewrazor/issues/3).
 
 Smaller gaps:
 
-- No `UseEffect`, so a component that subscribes to something has no place to unsubscribe
-  ([#2](https://github.com/naratteu/mewrazor/issues/2)).
 - An attribute matching no parameter compiles and only fails when the component renders. That
   is Blazor's behaviour rather than something this library adds
   ([#4](https://github.com/naratteu/mewrazor/issues/4)).

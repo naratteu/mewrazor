@@ -2,12 +2,27 @@
 @{
     var (name, setName) = UseState("world");
     var (count, setCount) = UseState(0);
+    var (clock, setClock) = UseState("--:--:--");
+
+    // Runs once, after the controls exist, and the action it returns stops the timer when this
+    // component leaves the tree. Without that the tick keeps pushing into state nobody displays.
+    UseEffect(() =>
+    {
+        var timer = new DispatcherTimer()
+            .IntervalMs(1000)
+            .OnTick(() => setClock(DateTime.Now.ToString("HH:mm:ss")));
+
+        timer.Start();
+        return () => timer.Stop();
+    });
 }
 
 <MewStackPanel Spacing="12" Margin="new Thickness(20)">
     <MewTextBlock Text="@($"Hello, {name}!")" FontSize="20" FontWeight="FontWeight.Bold" />
 
     <MewTextBox Value="@name" ValueChanged="setName" />
+
+    <MewTextBlock Text="@($"clock = {clock}")" FontSize="12" Foreground="Color.Gray" />
 
     <MewButton Text="Increment" OnClick="@(() => setCount(count + 1))" />
     <MewTextBlock Text="@($"count = {count}")" />

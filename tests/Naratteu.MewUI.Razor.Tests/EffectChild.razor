@@ -1,0 +1,23 @@
+@inherits HookComponent
+@{
+    // The cleanup must see the channel it subscribed to, not the one the component now has,
+    // so the value is captured into a local exactly like a React function body does.
+    var channel = Channel;
+
+    EffectLog.Add($"render {channel}");
+
+    UseEffect(() =>
+    {
+        EffectLog.Add($"subscribe {channel} (children={EffectHarness.ChildCount()})");
+        return () => EffectLog.Add($"unsubscribe {channel}");
+    }, channel);
+}
+
+<MewTextBlock Text="@($"listening to {channel}")" />
+
+@code {
+    [Parameter] public string Channel { get; set; } = "";
+
+    /// <summary>Changes on every parent render, so the body re-runs without touching the dependency.</summary>
+    [Parameter] public int Nudge { get; set; }
+}
