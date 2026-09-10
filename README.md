@@ -12,7 +12,7 @@ components.
 }
 
 <MewWindow Title="Hello MewRazor" Width="420" Height="240">
-    <MewStackPanel Spacing="12" Margin="new Thickness(20)">
+    <MewStackPanel Spacing="12" Margin="20">
         <MewTextBlock Text="@($"Hello, {name}!")" FontSize="22" FontWeight="FontWeight.Bold" />
         <MewTextBox Value="@name" ValueChanged="setName" />
     </MewStackPanel>
@@ -173,6 +173,10 @@ Public settable properties become parameters, and `Action` / `Action<T>` events 
 Every parameter is nullable and an unset one is never assigned, so a component you did not
 configure does not stamp defaults over the theme.
 
+A parameter takes a C# expression, not a string, so MewUI's own conversions apply: `Margin="20"`
+is a uniform `Thickness`, because `Thickness` converts from a `double`. Sides that differ still
+need the constructor — `Padding="new Thickness(4, 8)"`.
+
 Each generated component is `partial` with `OnControlCreated` and `ApplyCustomParameters` hooks,
 which is how the three hand-written extensions add what metadata cannot express: window sizing,
 `@bind-Value` on `MewTextBox`, and a `Text` shorthand on `MewButton`.
@@ -206,8 +210,6 @@ Smaller gaps:
 - An attribute matching no parameter compiles and only fails when the component renders. That
   is Blazor's behaviour rather than something this library adds
   ([#4](https://github.com/naratteu/mewrazor/issues/4)).
-- `Margin="new Thickness(20)"` is wordy; there is no shorthand
-  ([#5](https://github.com/naratteu/mewrazor/issues/5)).
 
 This library builds on `Microsoft.AspNetCore.Components.RenderTree`, which Microsoft marks with
 `BL0006`: not recommended outside Blazor, and subject to change between releases. That is the

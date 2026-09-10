@@ -12,7 +12,7 @@
 }
 
 <MewWindow Title="Hello MewRazor" Width="420" Height="240">
-    <MewStackPanel Spacing="12" Margin="new Thickness(20)">
+    <MewStackPanel Spacing="12" Margin="20">
         <MewTextBlock Text="@($"Hello, {name}!")" FontSize="22" FontWeight="FontWeight.Bold" />
         <MewTextBox Value="@name" ValueChanged="setName" />
     </MewStackPanel>
@@ -171,6 +171,10 @@ public 설정 가능 프로퍼티는 파라미터가 되고, `Action` / `Action<
 모든 파라미터는 nullable이고 지정하지 않은 값은 대입하지 않으므로, 설정하지 않은 컴포넌트가 테마
 위에 기본값을 덮어쓰지 않습니다.
 
+파라미터에는 문자열이 아니라 C# 식이 들어가므로 MewUI의 변환이 그대로 적용됩니다. `Margin="20"`은
+균일한 `Thickness`입니다 — `Thickness`가 `double`에서 변환되기 때문입니다. 면마다 값이 다르면
+생성자가 필요합니다: `Padding="new Thickness(4, 8)"`.
+
 생성된 컴포넌트는 전부 `partial`이고 `OnControlCreated`, `ApplyCustomParameters` 훅을 열어둡니다.
 메타데이터로 표현할 수 없는 것 세 가지가 그 훅으로 들어가 있습니다 — 창 크기, `MewTextBox`의
 `@bind-Value`, `MewButton`의 `Text` 축약.
@@ -203,8 +207,6 @@ HTML 엘리먼트를 쓰면 조용히 넘어가지 않고 명확한 에러가 �
 - 존재하지 않는 파라미터를 써도 컴파일은 통과하고 렌더링 시점에야 실패합니다. 이 라이브러리가
   더한 문제가 아니라 Blazor의 동작입니다
   ([#4](https://github.com/naratteu/mewrazor/issues/4)).
-- `Margin="new Thickness(20)"`가 장황합니다. 축약형이 없습니다
-  ([#5](https://github.com/naratteu/mewrazor/issues/5)).
 
 이 라이브러리는 `Microsoft.AspNetCore.Components.RenderTree` 위에 서 있고, Microsoft는 여기에
 `BL0006`을 붙여둡니다 — Blazor 바깥에서 쓰는 것을 권장하지 않으며 릴리스마다 바뀔 수 있다는
