@@ -154,13 +154,25 @@ HTML 엘리먼트를 쓰면 조용히 넘어가지 않고 명확한 에러가 �
 
 ## 아직 안 된 것
 
-- `@key` 재정렬은 자식을 옮기지 않고 예외를 던집니다.
-- `UseState`만 있고 `UseEffect`가 없어서 구독에 붙일 수명주기 훅이 없습니다.
-- 컬렉션 컨트롤(`ListBox`, `GridView`)에 항목 파라미터가 없습니다 — `IReadOnlyList<T>`
-  프로퍼티는 생성 대상 밖이고 별도 설계가 필요합니다.
+**컬렉션 컨트롤에 항목을 넣을 수 없습니다.** `ListBox`, `GridView`, `ComboBox`, `TreeView`,
+`NavigationView`가 생성돼 있고 자동 완성에도 뜨지만, 항목 프로퍼티가 `IReadOnlyList<T>`라
+생성 대상 파라미터 밖입니다. 컨테이너로만 동작합니다. 항목을 자식 컴포넌트로 표현하는 건 필터를
+손보는 문제가 아니라 설계 문제입니다 — [#3](https://github.com/naratteu/mewrazor/issues/3).
+
+그 외 작은 공백:
+
+- `UseEffect`가 없어서, 무언가를 구독하는 컴포넌트가 해제할 자리가 없습니다
+  ([#2](https://github.com/naratteu/mewrazor/issues/2)).
 - 존재하지 않는 파라미터를 써도 컴파일은 통과하고 렌더링 시점에야 실패합니다. 이 라이브러리가
-  더한 문제가 아니라 Blazor의 동작입니다.
-- `Margin="new Thickness(20)"`가 장황합니다. 축약형이 없습니다.
+  더한 문제가 아니라 Blazor의 동작입니다
+  ([#4](https://github.com/naratteu/mewrazor/issues/4)).
+- `Margin="new Thickness(20)"`가 장황합니다. 축약형이 없습니다
+  ([#5](https://github.com/naratteu/mewrazor/issues/5)).
+
+이 라이브러리는 `Microsoft.AspNetCore.Components.RenderTree` 위에 서 있고, Microsoft는 여기에
+`BL0006`을 붙여둡니다 — Blazor 바깥에서 쓰는 것을 권장하지 않으며 릴리스마다 바뀔 수 있다는
+경고입니다. 그게 이 설계의 전제라 프로젝트 레벨에서 한 번 억제했지만, 패키지가
+`Microsoft.AspNetCore.Components` 버전을 부동으로 두지 않고 고정하는 이유이기도 합니다.
 
 ## 라이선스
 

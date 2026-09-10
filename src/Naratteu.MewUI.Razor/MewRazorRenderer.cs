@@ -82,6 +82,8 @@ public sealed class MewRazorRenderer : Renderer
     {
         if (!_nodesByComponentId.TryGetValue(componentId, out var node)) return;
 
+        List<(int From, int To)>? permutation = null;
+
         for (var i = 0; i < edits.Count; i++)
         {
             ref var edit = ref edits.Array[edits.Offset + i];
@@ -100,9 +102,14 @@ public sealed class MewRazorRenderer : Renderer
                     break;
 
                 case RenderTreeEditType.PermutationListEntry:
+                    permutation ??= [];
+                    permutation.Add((edit.SiblingIndex, edit.MoveToSiblingIndex));
+                    break;
+
                 case RenderTreeEditType.PermutationListEnd:
-                    throw new NotSupportedException(
-                        "Reordering keyed children (@key) is not implemented yet.");
+                    Permute(node, permutation ?? []);
+                    permutation = null;
+                    break;
 
                 default:
                     throw new NotSupportedException(
@@ -191,6 +198,59 @@ public sealed class MewRazorRenderer : Renderer
         if (child.Element is not null) parent.TargetForChildren().Insert(index, child.Element);
     }
 
+    /// <summary>
+    /// Reorders keyed children. The moves describe one simultaneous permutation, so the whole
+    /// run is lifted out of the target collection and reinserted in the new order; the controls
+    /// themselves are moved, never rebuilt.
+    /// </summary>
+    private static void Permute(MewNode parent, List<(int From, int To)> moves)
+    {
+        if (moves.Count == 0) return;
+
+        var current = parent.Children.ToArray();
+        var reordered = new MewNode?[current.Length];
+        var movedFrom = new HashSet<int>();
+
+        foreach (var (from, to) in moves)
+        {
+            reordered[to] = current[from];
+            movedFrom.Add(from);
+        }
+
+        // Children the diff did not list keep their relative order in the gaps that are left.
+        var untouched = new Queue<MewNode>();
+        for (var i = 0; i < current.Length; i++)
+        {
+            if (!movedFrom.Contains(i)) untouched.Enqueue(current[i]);
+        }
+
+        for (var i = 0; i < reordered.Length; i++) reordered[i] ??= untouched.Dequeue();
+
+        var target = parent.TargetForChildren();
+        var start = parent.PhysicalIndex(0);
+        var count = 0;
+        foreach (var child in current) count += child.ElementCount;
+
+        for (var i = 0; i < count; i++) target.RemoveAt(start);
+
+        parent.Children.Clear();
+        parent.Children.AddRange(reordered!);
+
+        var index = start;
+        foreach (var child in reordered) Reinsert(child!, target, ref index);
+    }
+
+    private static void Reinsert(MewNode node, MewChildCollection target, ref int index)
+    {
+        if (node.Element is not null)
+        {
+            target.Insert(index++, node.Element);
+            return;
+        }
+
+        foreach (var child in node.Children) Reinsert(child, target, ref index);
+    }
+
     private void RemoveChild(MewNode parent, int siblingIndex)
     {
         var child = parent.Children[siblingIndex];
@@ -202,13 +262,19 @@ public sealed class MewRazorRenderer : Renderer
         var target = parent.TargetForChildren();
         for (var i = 0; i < count; i++) target.RemoveAt(index);
 
-        Forget(child);
+        Discard(child);
     }
 
-    private void Forget(MewNode node)
+    /// <summary>
+    /// Drops a removed subtree. Every element is disposed individually: MewUI severs a control's
+    /// bindings only on that control's own <see cref="IDisposable.Dispose"/>, and neither removing
+    /// it from its parent nor disposing the parent reaches it.
+    /// </summary>
+    private void Discard(MewNode node)
     {
         if (node.ComponentId >= 0) _nodesByComponentId.Remove(node.ComponentId);
-        foreach (var child in node.Children) Forget(child);
+        foreach (var child in node.Children) Discard(child);
+        (node.Element as IDisposable)?.Dispose();
     }
 
     private static void UpdateText(MewNode parent, int siblingIndex, string text)

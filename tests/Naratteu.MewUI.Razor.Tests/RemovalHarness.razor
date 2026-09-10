@@ -1,0 +1,21 @@
+@inherits HookComponent
+@{
+    var (visible, setVisible) = UseState(true);
+    var (text, setText) = UseState("start");
+
+    Hide = () => setVisible(false);
+    Current = () => text;
+}
+
+<MewStackPanel>
+    @if (visible)
+    {
+        <MewTextBox Value="@text" ValueChanged="setText" />
+    }
+</MewStackPanel>
+
+@code {
+    public static Action Hide { get; set; } = () => { };
+
+    public static Func<string> Current { get; set; } = () => "";
+}

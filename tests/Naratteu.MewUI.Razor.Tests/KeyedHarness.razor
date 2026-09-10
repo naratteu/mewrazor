@@ -1,0 +1,17 @@
+@inherits HookComponent
+@{
+    var (items, setItems) = UseState<string[]>(["a", "b", "c"]);
+
+    Reorder = next => setItems(next);
+}
+
+<MewStackPanel>
+    @foreach (var item in items)
+    {
+        <MewTextBlock @key="item" Text="@item" />
+    }
+</MewStackPanel>
+
+@code {
+    public static Action<string[]> Reorder { get; set; } = _ => { };
+}

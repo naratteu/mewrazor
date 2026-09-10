@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # The library and its tests need only Aprillz.MewUI.Core, which is platform-neutral;
+    # the platform packages are pulled in by the samples, not by anything built here.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build src/Naratteu.MewUI.Razor -warnaserror
+
+      - name: Test
+        run: dotnet test tests/Naratteu.MewUI.Razor.Tests
+
+      - name: Pack
+        run: dotnet pack src/Naratteu.MewUI.Razor -c Release -o artifacts
+
+      - name: Verify the package produces working components
+        # Guards against the generator being packed again. If it were, it would run in the
+        # consumer's own compilation, duplicate every component, and shadow the hand-written
+        # partials -- which shows up as CS0436 rather than as a build failure.
+        run: |
+          cd eng/packagetest
+          dotnet build consume.cs 2>&1 | tee build.log
+          if grep -q CS0436 build.log; then
+            echo "::error::components were regenerated in the consumer compilation"
+            exit 1
+          fi

@@ -154,13 +154,26 @@ which does the same thing for .NET MAUI.
 
 ## Not done yet
 
-- `@key` reordering throws instead of permuting children.
-- Only `UseState` exists; there is no `UseEffect`, so subscriptions have no lifecycle hook.
-- Collection controls (`ListBox`, `GridView`) expose no items parameter — `IReadOnlyList<T>`
-  properties are outside the generated surface and need a design of their own.
-- An attribute matching no parameter compiles and only fails when the component renders, which
-  is Blazor's behaviour rather than something this library adds.
-- `Margin="new Thickness(20)"` is wordy; there is no shorthand.
+**Collection controls take no items.** `ListBox`, `GridView`, `ComboBox`, `TreeView` and
+`NavigationView` are generated and will happily appear in completion, but their item properties
+are `IReadOnlyList<T>`, which is outside the generated parameter surface. They work as
+containers and nothing else. Modelling items as child components is a design question, not a
+filter tweak — see [#3](https://github.com/naratteu/mewrazor/issues/3).
+
+Smaller gaps:
+
+- No `UseEffect`, so a component that subscribes to something has no place to unsubscribe
+  ([#2](https://github.com/naratteu/mewrazor/issues/2)).
+- An attribute matching no parameter compiles and only fails when the component renders. That
+  is Blazor's behaviour rather than something this library adds
+  ([#4](https://github.com/naratteu/mewrazor/issues/4)).
+- `Margin="new Thickness(20)"` is wordy; there is no shorthand
+  ([#5](https://github.com/naratteu/mewrazor/issues/5)).
+
+This library builds on `Microsoft.AspNetCore.Components.RenderTree`, which Microsoft marks with
+`BL0006`: not recommended outside Blazor, and subject to change between releases. That is the
+design, so the warning is suppressed once at the project level — but it is why the package pins
+its `Microsoft.AspNetCore.Components` version rather than floating.
 
 ## License
 
