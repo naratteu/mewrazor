@@ -69,6 +69,24 @@ public abstract class HookComponent : IComponent, IHandleAfterRender, IDisposabl
     }
 
     /// <summary>
+    /// Declares a value that survives re-renders and never causes one. An effect that outlives
+    /// the render it was declared in — a timer, a subscription — reads the current value of
+    /// state through a ref instead of through the closure it captured, which holds whatever was
+    /// true on the render that created it.
+    /// </summary>
+    protected Ref<T> UseRef<T>(T initial) => UseMemo(() => new Ref<T>(initial));
+
+    /// <summary>
+    /// Keeps one delegate across renders. A lambda that captures anything is a new delegate every
+    /// render, and a new delegate is a changed parameter, so a child that takes a handler renders
+    /// again each time; passing the same instance stops that. It also matters wherever identity
+    /// itself does: a dependency of another hook, or a handler something subscribes to once.
+    /// </summary>
+    protected TDelegate UseCallback<TDelegate>(TDelegate callback, params object?[] dependencies)
+        where TDelegate : Delegate
+        => UseMemo(() => callback, dependencies);
+
+    /// <summary>
     /// Runs <paramref name="effect"/> once the render that declared it has reached the control
     /// tree, and again whenever <paramref name="dependencies"/> change. The action it returns is
     /// the cleanup: it runs before the next run, and once more when the component leaves the tree.

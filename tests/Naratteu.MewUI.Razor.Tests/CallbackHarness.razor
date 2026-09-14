@@ -1,0 +1,33 @@
+@inherits HookComponent
+@{
+    var (count, setCount) = UseState(0);
+    var (topic, setTopic) = UseState("a");
+
+    var forever = UseCallback(() => setCount(count + 1));
+    var perTopic = UseCallback(() => setTopic(topic), topic);
+
+    // A typed lambda infers its own delegate type, so a handler with arguments works too.
+    var pick = UseCallback((int n) => setCount(n), topic);
+
+    Bump = () => setCount(count + 1);
+    Switch = next => setTopic(next);
+    Forever = () => forever;
+    Pick = () => pick;
+    PerTopic = () => perTopic;
+}
+
+<MewStackPanel>
+    <MewTextBlock Text="@($"{topic}:{count}")" />
+</MewStackPanel>
+
+@code {
+    public static Action Bump { get; set; } = () => { };
+
+    public static Action<string> Switch { get; set; } = _ => { };
+
+    public static Func<Action> Forever { get; set; } = () => () => { };
+
+    public static Func<Action> PerTopic { get; set; } = () => () => { };
+
+    public static Func<Action<int>> Pick { get; set; } = () => _ => { };
+}

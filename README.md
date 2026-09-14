@@ -23,6 +23,9 @@ That is a real native window. There is no HTML, no browser, and no web server an
 process — `<MewStackPanel>` compiles to a `StackPanel` control, and Blazor's diffing engine
 applies changes straight to the MewUI element tree.
 
+Coming from React? [**MewRazor for React developers**](docs/react.md) maps the whole model — hooks,
+props, children, keys, context — onto what you already know, and ends with a todo app.
+
 ## Run it in one command
 
 Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download). No project file needed —
@@ -77,6 +80,9 @@ Swap the platform lines for your OS:
 | Linux (X11) | `Aprillz.MewUI.Linux` | `.UseX11().UseMewVGX11()` |
 | macOS (Metal) | `Aprillz.MewUI.MacOS` | `.UseMacOS().UseMewVGMetal()` |
 
+[`samples/todo`](samples/todo) is a fuller one in the same style, walked through in the
+[React guide](docs/react.md).
+
 For a normal project instead of a single file, see [`samples/Playground`](samples/Playground) —
 the only difference is `<Project Sdk="Microsoft.NET.Sdk.Razor">` with
 `AddRazorSupportForMvc=false` and `StaticWebAssetsEnabled=false`.
@@ -102,6 +108,9 @@ State is a plain local. Nothing is registered, bound, or observed:
 `TextBlock` whose text changed keeps its identity and only has `Text` reassigned. This is the
 React model: state is identified by hook call order, so hooks must not run inside a conditional
 or a loop, and nothing ever inspects what a closure captured.
+
+The rest of the hook set is here as well: `UseEffect`, `UseMemo`, `UseCallback` and `UseRef`,
+with the semantics they have in React.
 
 Classic Blazor components work too. Inherit `ComponentBase` instead of `HookComponent` and use
 fields with `@bind-Value`:

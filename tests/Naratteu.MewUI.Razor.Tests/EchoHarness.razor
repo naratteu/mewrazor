@@ -1,0 +1,18 @@
+@inherits HookComponent
+@{
+    var (done, setDone) = UseState(true);
+
+    Flip = () => setDone(!done);
+}
+
+<MewStackPanel>
+    <MewCheckBox IsChecked="done" OnCheckedChanged="@(_ => Callbacks++)" />
+</MewStackPanel>
+
+@code {
+    // A controlled control: the parent owns the value. Assigning it must not be reported back
+    // as if the user had done it, or the report feeds the next assignment.
+    public static int Callbacks { get; set; }
+
+    public static Action Flip { get; set; } = () => { };
+}

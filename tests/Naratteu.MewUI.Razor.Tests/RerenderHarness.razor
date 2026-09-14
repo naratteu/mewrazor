@@ -1,0 +1,20 @@
+@inherits HookComponent
+@{
+    var (nudge, setNudge) = UseState(0);
+
+    // Same delegate on every render, where the markup lambda below is a new one each time.
+    var stable = UseCallback(() => setNudge(nudge));
+
+    Rerender = () => setNudge(nudge + 1);
+}
+
+<MewStackPanel>
+    <PlainChild Label="steady" />
+    <ChangingChild Label="@($"n={nudge}")" />
+    <CallbackChild OnPing="@(() => setNudge(nudge))" />
+    <StableCallbackChild OnPing="stable" />
+</MewStackPanel>
+
+@code {
+    public static Action Rerender { get; set; } = () => { };
+}

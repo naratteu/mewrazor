@@ -1,0 +1,11 @@
+@{
+    Renders++;
+}
+
+<MewTextBlock Text="@Label" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+
+    public static int Renders { get; set; }
+}

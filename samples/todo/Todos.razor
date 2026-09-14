@@ -1,0 +1,39 @@
+@inherits HookComponent
+@{
+    var (items, setItems) = UseState<Item[]>([]);
+    var (draft, setDraft) = UseState("");
+
+    // Survives re-renders and renders nothing when it changes, so it is not state.
+    var nextId = UseRef(1);
+
+    var left = items.Count(item => !item.Done);
+
+    void Add()
+    {
+        if (string.IsNullOrWhiteSpace(draft)) return;
+
+        setItems([.. items, new Item(nextId.Value++, draft.Trim(), false)]);
+        setDraft("");
+    }
+
+    void Toggle(int id) =>
+        setItems([.. items.Select(item => item.Id == id ? item with { Done = !item.Done } : item)]);
+
+    void Remove(int id) => setItems([.. items.Where(item => item.Id != id)]);
+}
+
+<MewStackPanel Spacing="10" Margin="20">
+    <MewTextBlock Text="Todos" FontSize="22" FontWeight="FontWeight.Bold" />
+
+    <MewStackPanel Orientation="Orientation.Horizontal" Spacing="8">
+        <MewTextBox Value="@draft" ValueChanged="setDraft" Width="260" />
+        <MewButton Text="Add" OnClick="Add" />
+    </MewStackPanel>
+
+    @foreach (var item in items)
+    {
+        <TodoRow @key="item.Id" Item="item" OnToggle="Toggle" OnRemove="Remove" />
+    }
+
+    <MewTextBlock Text="@($"{left} left")" FontSize="12" Foreground="Color.Gray" />
+</MewStackPanel>

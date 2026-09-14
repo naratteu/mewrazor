@@ -1,0 +1,16 @@
+@inherits HookComponent
+@{
+    var (theme, setTheme) = UseState("dark");
+
+    SwitchTheme = next => setTheme(next);
+}
+
+<CascadingValue Value="theme">
+    <MewStackPanel>
+        <ThemedText />
+    </MewStackPanel>
+</CascadingValue>
+
+@code {
+    public static Action<string> SwitchTheme { get; set; } = _ => { };
+}

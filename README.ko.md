@@ -23,6 +23,9 @@
 `<MewStackPanel>`은 `StackPanel` 컨트롤로 컴파일되고, Blazor의 diff 엔진이 변경분을 MewUI
 엘리먼트 트리에 직접 적용합니다.
 
+React에서 오셨나요? [**React 개발자를 위한 MewRazor**](docs/react.ko.md)가 훅, props, children,
+key, context를 이미 아는 개념에 그대로 대응시키고, 마지막에 todo 앱으로 끝냅니다.
+
 ## 한 줄로 실행하기
 
 [.NET 10 SDK](https://dotnet.microsoft.com/download)가 필요합니다. 프로젝트 파일은 없어도 됩니다 —
@@ -77,6 +80,9 @@ Application
 | Linux (X11) | `Aprillz.MewUI.Linux` | `.UseX11().UseMewVGX11()` |
 | macOS (Metal) | `Aprillz.MewUI.MacOS` | `.UseMacOS().UseMewVGMetal()` |
 
+[`samples/todo`](samples/todo)는 같은 스타일의 더 큰 예제이고,
+[React 가이드](docs/react.ko.md)가 이걸 따라갑니다.
+
 단일 파일 대신 일반 프로젝트로 쓰려면 [`samples/Playground`](samples/Playground)를 보세요.
 차이는 `<Project Sdk="Microsoft.NET.Sdk.Razor">`에 `AddRazorSupportForMvc=false`와
 `StaticWebAssetsEnabled=false`를 붙이는 것뿐입니다.
@@ -102,6 +108,9 @@ Application
 텍스트만 바뀐 `TextBlock`은 인스턴스를 유지한 채 `Text`만 재대입됩니다. React와 같은 모델이라,
 상태는 훅 호출 순서로 식별되고(따라서 훅을 조건문이나 반복문 안에서 호출하면 안 됩니다) 클로저가
 무엇을 캡쳐했는지는 아무도 들여다보지 않습니다.
+
+나머지 훅도 다 있습니다 — `UseEffect`, `UseMemo`, `UseCallback`, `UseRef`. 의미는 React와
+같습니다.
 
 기존 Blazor 스타일도 그대로 됩니다. `HookComponent` 대신 `ComponentBase`를 상속하고 필드에
 `@bind-Value`를 쓰면 됩니다:

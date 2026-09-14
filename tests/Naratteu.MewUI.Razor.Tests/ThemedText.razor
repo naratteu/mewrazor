@@ -1,0 +1,7 @@
+@inherits HookComponent
+
+<MewTextBlock Text="@($"theme={Theme}")" />
+
+@code {
+    [CascadingParameter] public string? Theme { get; set; }
+}

@@ -7,11 +7,15 @@
     var view = UseMemo(() => ItemsView.Create(items), items);
 
     UseEffect(() => { }, items);
+
+    var seen = UseRef(0);
+    var noop = UseCallback(() => { seen.Value++; });
 }
 
 <MewStackPanel Spacing="8" Margin="4">
     <MewTextBlock Text="packaged" FontWeight="FontWeight.Bold" />
     <MewButton Text="ok" />
     <MewListBox ItemsSource="view" />
+    <MewButton Text="hooked" OnClick="noop" />
     <MewGridView />
 </MewStackPanel>

@@ -1,0 +1,36 @@
+@inherits HookComponent
+@{
+    var (items, setItems) = UseState<(int Id, string Text, bool Done)[]>([]);
+
+    var nextId = UseRef(1);
+    var left = items.Count(item => !item.Done);
+
+    Add = text => setItems([.. items, (nextId.Value++, text, false)]);
+
+    Toggle = id => setItems(
+        [.. items.Select(item => item.Id == id ? item with { Done = !item.Done } : item)]);
+
+    Remove = id => setItems([.. items.Where(item => item.Id != id)]);
+}
+
+<MewStackPanel>
+    @foreach (var item in items)
+    {
+        <TodoRowHarness @key="item.Id"
+                        Id="item.Id"
+                        Text="@item.Text"
+                        Done="item.Done"
+                        OnToggle="Toggle"
+                        OnRemove="Remove" />
+    }
+
+    <MewTextBlock Text="@($"{left} left")" />
+</MewStackPanel>
+
+@code {
+    public static Action<string> Add { get; set; } = _ => { };
+
+    public static Action<int> Toggle { get; set; } = _ => { };
+
+    public static Action<int> Remove { get; set; } = _ => { };
+}

@@ -1,0 +1,11 @@
+@{
+    Renders++;
+}
+
+<MewTextBlock Text="stable" />
+
+@code {
+    [Parameter] public EventCallback OnPing { get; set; }
+
+    public static int Renders { get; set; }
+}

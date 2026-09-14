@@ -284,9 +284,11 @@ public sealed class MewComponentGenerator : IIncrementalGenerator
         foreach (var e in model.Events)
         {
             // Subscribe once; the handler reads whichever callback the latest render supplied.
+            // An event raised while this component is assigning parameters is the component's
+            // own doing, not the user's, so it is not reported back.
             builder.AppendLine(e.ArgumentType is null
-                ? $"        Control.{e.Name} += () => _ = {e.ParameterName}.InvokeAsync();"
-                : $"        Control.{e.Name} += __arg => _ = {e.ParameterName}.InvokeAsync(__arg);");
+                ? $"        Control.{e.Name} += () => {{ if (!IsApplyingParameters) _ = {e.ParameterName}.InvokeAsync(); }};"
+                : $"        Control.{e.Name} += __arg => {{ if (!IsApplyingParameters) _ = {e.ParameterName}.InvokeAsync(__arg); }};");
         }
 
         if (callsHook) builder.AppendLine("        OnControlCreated();");

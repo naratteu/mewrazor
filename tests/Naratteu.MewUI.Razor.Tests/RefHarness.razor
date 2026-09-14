@@ -1,0 +1,32 @@
+@inherits HookComponent
+@{
+    var (count, setCount) = UseState(0);
+
+    // Always holds the current count, so a closure made once can still read it later.
+    var latest = UseRef(count);
+    latest.Value = count;
+
+    var renders = UseRef(0);
+    renders.Value++;
+
+    UseEffect(() =>
+    {
+        // Stands in for a timer started on mount: created once, called much later.
+        Tick = () => setCount(latest.Value + 1);
+        Stale = () => setCount(count + 1);
+    });
+
+    Renders = () => renders.Value;
+}
+
+<MewStackPanel>
+    <MewTextBlock Text="@($"count={count}")" />
+</MewStackPanel>
+
+@code {
+    public static Action Tick { get; set; } = () => { };
+
+    public static Action Stale { get; set; } = () => { };
+
+    public static Func<int> Renders { get; set; } = () => -1;
+}

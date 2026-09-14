@@ -1,0 +1,14 @@
+<MewStackPanel Orientation="Orientation.Horizontal" Spacing="8">
+    <MewCheckBox IsChecked="Item.Done" OnCheckedChanged="@(_ => OnToggle.InvokeAsync(Item.Id))" />
+    <MewTextBlock Text="@Item.Text" Width="280" />
+    <MewButton Text="remove" OnClick="@(() => OnRemove.InvokeAsync(Item.Id))" />
+</MewStackPanel>
+
+@code {
+    // Props. A row owns nothing: it shows what it is given and reports what was clicked.
+    [Parameter] public Item Item { get; set; } = default!;
+
+    [Parameter] public EventCallback<int> OnToggle { get; set; }
+
+    [Parameter] public EventCallback<int> OnRemove { get; set; }
+}

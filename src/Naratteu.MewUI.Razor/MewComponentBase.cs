@@ -19,10 +19,22 @@ public abstract class MewComponentBase : IComponent
 
     void IComponent.Attach(RenderHandle renderHandle) => _renderHandle = renderHandle;
 
+    /// <summary>
+    /// True while parameters are being pushed onto the control. A MewUI control raises its change
+    /// event whenever a property changes, including when this component assigns it, and reporting
+    /// that back to the parent that just set the value is how a controlled value starts
+    /// oscillating: the parent sets, the control reports, the callback sets it back.
+    /// </summary>
+    protected bool IsApplyingParameters { get; private set; }
+
     public virtual Task SetParametersAsync(ParameterView parameters)
     {
         parameters.SetParameterProperties(this);
-        ApplyParameters();
+
+        IsApplyingParameters = true;
+        try { ApplyParameters(); }
+        finally { IsApplyingParameters = false; }
+
         _renderHandle.Render(RenderChildContent);
         return Task.CompletedTask;
     }
