@@ -1,0 +1,9 @@
+@inherits HookComponent
+
+<MewStackPanel>
+    <TemplateChild Items="@(new[] { "a", "b" })">
+        <Row Context="value">
+            <MewTextBlock Text="@($"row {value}")" />
+        </Row>
+    </TemplateChild>
+</MewStackPanel>

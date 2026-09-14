@@ -1,0 +1,11 @@
+@foreach (var item in Items)
+{
+    @Row(item)
+}
+
+@code {
+    [Parameter] public string[] Items { get; set; } = [];
+
+    /// <summary>A render prop: the parent decides what a row looks like.</summary>
+    [Parameter] public RenderFragment<string>? Row { get; set; }
+}

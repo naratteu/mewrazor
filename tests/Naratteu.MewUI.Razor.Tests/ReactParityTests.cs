@@ -98,3 +98,18 @@ public class ContextTests
         Assert.Equal("theme=light", ((TextBlock)panel.Children[0]).Text);
     }
 }
+
+/// <summary>
+/// A render prop. The child owns the loop and the parent owns what a row looks like, which is
+/// React's children-as-a-function with a Razor spelling.
+/// </summary>
+public class TemplateTests
+{
+    [Fact]
+    public void AChildRendersTheTemplateItsParentPassed()
+    {
+        var panel = new MewRazorRenderer().Mount<TemplateHarness, StackPanel>();
+
+        Assert.Equal(["row a", "row b"], panel.Children.OfType<TextBlock>().Select(text => text.Text));
+    }
+}

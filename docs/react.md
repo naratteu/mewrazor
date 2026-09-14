@@ -67,6 +67,32 @@ rebuilt.
 | `items.map(…)` | `@foreach (var item in items) { … }` |
 | `<>…</>` | nothing — a component may render several tags |
 
+## Children and render props
+
+`ChildContent` is `children`, and a typed fragment is a render prop — the child owns the loop, the
+parent owns what a row looks like:
+
+```razor
+<TodoList Items="items">
+    <Row Context="item">
+        <MewTextBlock Text="@item.Text" />
+    </Row>
+</TodoList>
+```
+
+```razor
+@foreach (var item in Items)
+{
+    @Row(item)
+}
+
+@code {
+    [Parameter] public Item[] Items { get; set; } = [];
+
+    [Parameter] public RenderFragment<Item>? Row { get; set; }
+}
+```
+
 ## Hooks
 
 `UseState` returns the value and its setter, as a tuple you deconstruct:

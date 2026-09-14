@@ -67,6 +67,32 @@ function Counter() {
 | `items.map(…)` | `@foreach (var item in items) { … }` |
 | `<>…</>` | 필요 없음 — 컴포넌트는 태그를 여러 개 렌더해도 됩니다 |
 
+## children과 render prop
+
+`ChildContent`가 곧 `children`이고, 타입이 있는 fragment가 render prop입니다 — 반복은 자식이 돌고,
+행의 생김새는 부모가 정합니다:
+
+```razor
+<TodoList Items="items">
+    <Row Context="item">
+        <MewTextBlock Text="@item.Text" />
+    </Row>
+</TodoList>
+```
+
+```razor
+@foreach (var item in Items)
+{
+    @Row(item)
+}
+
+@code {
+    [Parameter] public Item[] Items { get; set; } = [];
+
+    [Parameter] public RenderFragment<Item>? Row { get; set; }
+}
+```
+
 ## 훅
 
 `UseState`는 값과 세터를 튜플로 돌려주고, 구조 분해로 받습니다:
