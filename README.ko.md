@@ -244,8 +244,11 @@ MewUI는 AOT 퍼블리시를 위해 만들어졌고, 이 라이브러리도 그 
 표시돼 있고, 이걸 쓰는 앱은 네이티브 바이너리로 퍼블리시돼 그대로 실행됩니다.
 
 ```bash
-dotnet publish -c Release -r osx-arm64 -p:PublishAot=true
+cd samples/hello
+dotnet publish hello.cs -c Release -r osx-arm64 -p:PublishAot=true
 ```
+
+런타임 설치가 필요 없는 4.6MB 네이티브 바이너리가 나옵니다.
 
 조용히 깨질 수 있는 지점은 트리밍입니다. Blazor는 컴포넌트를 리플렉션으로 생성하고 파라미터를
 리플렉션으로 대입하므로, 어노테이션이 빠져 있어도 **빌드는 성공하고** 퍼블리시된 바이너리가 첫

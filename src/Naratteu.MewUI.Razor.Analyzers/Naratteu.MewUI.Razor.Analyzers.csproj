@@ -1,4 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" TreatAsLocalProperty="PublishAot;PublishTrimmed;IsAotCompatible;SelfContained;RuntimeIdentifier">
+
+  <PropertyGroup>
+    <!-- This runs inside the compiler, not inside the app. An app publishing itself ahead of time
+         passes PublishAot down to everything it references, where for netstandard2.0 it is an
+         error rather than a request, so the request is dropped here. -->
+    <PublishAot>false</PublishAot>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IsAotCompatible>false</IsAotCompatible>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier></RuntimeIdentifier>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>

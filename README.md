@@ -249,8 +249,11 @@ MewUI is built for ahead-of-time publishing, and this library keeps that propert
 `IsAotCompatible`, and an app using it publishes and runs as a native binary.
 
 ```bash
-dotnet publish -c Release -r osx-arm64 -p:PublishAot=true
+cd samples/hello
+dotnet publish hello.cs -c Release -r osx-arm64 -p:PublishAot=true
 ```
+
+That is a 4.6 MB native binary with no runtime to install.
 
 Trimming is the part that can quietly break. Blazor instantiates a component and assigns its
 parameters by reflection, so when an annotation is missing the build still succeeds and the
