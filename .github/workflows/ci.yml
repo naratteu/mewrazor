@@ -27,6 +27,17 @@ jobs:
       - name: Pack
         run: dotnet pack src/Naratteu.MewUI.Razor -c Release -o artifacts
 
+      - name: Verify the package survives NativeAOT
+        # Trimming does not fail the build when it goes wrong here. Blazor instantiates
+        # components and assigns their parameters by reflection, so a missing annotation shows up
+        # as a constructor that is no longer there -- at runtime, on the first frame. The probe
+        # is therefore published ahead of time and then run, and it checks values, not startup.
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends clang zlib1g-dev
+          dotnet publish eng/aottest -c Release -r linux-x64
+          ./eng/aottest/bin/Release/net10.0/linux-x64/publish/aottest
+
       - name: Verify the analyzer rejects an attribute that matches no parameter
         # MEW001 only earns its severity if it actually fires from the packaged analyzer.
         run: |

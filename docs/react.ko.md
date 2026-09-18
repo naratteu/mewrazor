@@ -89,7 +89,7 @@ function Counter() {
 @code {
     [Parameter] public Item[] Items { get; set; } = [];
 
-    [Parameter] public RenderFragment<Item>? Row { get; set; }
+    [Parameter] public RenderFragment<Item> Row { get; set; } = default!;
 }
 ```
 

@@ -1,0 +1,10 @@
+@inherits HookComponent
+
+<MewTextBlock Text="@($"{Prefix}{Level}")" />
+
+@code {
+    // A parameter on a hand-written component: Blazor finds and sets this by reflection.
+    [Parameter] public string Prefix { get; set; } = "";
+
+    [CascadingParameter] public int Level { get; set; }
+}

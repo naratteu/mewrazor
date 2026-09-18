@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Aprillz.MewUI;
 using Aprillz.MewUI.Controls;
 using Microsoft.AspNetCore.Components;
@@ -10,7 +11,9 @@ public static class MewRazorHost
     /// Uses a Razor component as the main window. The component must render a single
     /// <c>&lt;MewWindow&gt;</c> at its root.
     /// </summary>
-    public static ApplicationBuilder BuildMainWindow<TRoot>(this ApplicationBuilder builder)
+    public static ApplicationBuilder BuildMainWindow<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TRoot>(
+        this ApplicationBuilder builder)
         where TRoot : IComponent
         => builder.BuildMainWindow(() => new MewRazorRenderer().Mount<TRoot, Window>());
 }

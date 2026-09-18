@@ -243,6 +243,32 @@ ASP.NET Core at runtime.
 The design follows [BlazorBindings.Maui](https://github.com/Dreamescaper/BlazorBindings.Maui),
 which does the same thing for .NET MAUI.
 
+## NativeAOT
+
+MewUI is built for ahead-of-time publishing, and this library keeps that property: it is marked
+`IsAotCompatible`, and an app using it publishes and runs as a native binary.
+
+```bash
+dotnet publish -c Release -r osx-arm64 -p:PublishAot=true
+```
+
+Trimming is the part that can quietly break. Blazor instantiates a component and assigns its
+parameters by reflection, so when an annotation is missing the build still succeeds and the
+published binary dies on its first frame with *A suitable constructor for type 'App' could not be
+located*. That is not hypothetical — it is what the published probe did before the generic
+parameters of `Mount` and `BuildMainWindow` were annotated.
+
+So the guard runs the binary rather than only building it. [`eng/aottest`](eng/aottest) is
+published with `PublishAot` on every CI run and executed; it mounts a component and checks that
+each shape of parameter arrived on the control — string, enum, nullable double, struct, a
+parameter on a hand-written component, a cascading value, an event callback, and a state change
+after mount. Mounting needs no window, so it runs headless on the CI machine.
+
+Publishing your own app prints four trim warnings from inside `Microsoft.AspNetCore.Components`,
+where the framework reaches for `instance.GetType()` on its way to a component's parameters. They
+are the paths the probe covers: everything a view can reach is rooted by `OpenComponent<T>`, which
+carries the annotation the analyser is asking for here.
+
 ## Not done yet
 
 **`TabControl` and `NavigationView` take no items.** Every other collection control has an

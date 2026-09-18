@@ -1,0 +1,19 @@
+@inherits HookComponent
+@{
+    var (name, setName) = UseState("hello");
+
+    Rename = setName;
+}
+
+<CascadingValue Value="42">
+    <MewStackPanel Orientation="Orientation.Horizontal" Spacing="6" Margin="new Thickness(4, 8)">
+        <MewTextBlock Text="@name" FontSize="18" FontWeight="FontWeight.Bold" Margin="20" />
+        <MewCheckBox IsChecked="true" />
+        <MewTextBox Value="@name" ValueChanged="setName" />
+        <Label Prefix="p" />
+    </MewStackPanel>
+</CascadingValue>
+
+@code {
+    public static Action<string> Rename { get; set; } = _ => { };
+}

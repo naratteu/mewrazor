@@ -238,6 +238,30 @@ HTML 엘리먼트를 쓰면 조용히 넘어가지 않고 명확한 에러가 �
 설계는 .NET MAUI에 같은 일을 하는
 [BlazorBindings.Maui](https://github.com/Dreamescaper/BlazorBindings.Maui)를 따랐습니다.
 
+## NativeAOT
+
+MewUI는 AOT 퍼블리시를 위해 만들어졌고, 이 라이브러리도 그 성질을 유지합니다. `IsAotCompatible`로
+표시돼 있고, 이걸 쓰는 앱은 네이티브 바이너리로 퍼블리시돼 그대로 실행됩니다.
+
+```bash
+dotnet publish -c Release -r osx-arm64 -p:PublishAot=true
+```
+
+조용히 깨질 수 있는 지점은 트리밍입니다. Blazor는 컴포넌트를 리플렉션으로 생성하고 파라미터를
+리플렉션으로 대입하므로, 어노테이션이 빠져 있어도 **빌드는 성공하고** 퍼블리시된 바이너리가 첫
+프레임에서 *A suitable constructor for type 'App' could not be located*로 죽습니다. 가정이 아니라,
+`Mount`와 `BuildMainWindow`의 제네릭 파라미터에 어노테이션을 붙이기 전 실제로 그랬습니다.
+
+그래서 가드는 빌드가 아니라 **실행**합니다. [`eng/aottest`](eng/aottest)는 CI마다 `PublishAot`로
+퍼블리시된 뒤 실행되고, 파라미터의 각 형태가 컨트롤에 도착했는지 값으로 확인합니다 — 문자열, enum,
+nullable double, 구조체, 직접 쓴 컴포넌트의 파라미터, cascading 값, 이벤트 콜백, 그리고 마운트 이후의
+상태 변경. 마운트에는 창이 필요 없어서 CI에서 헤드리스로 돕니다.
+
+직접 앱을 퍼블리시하면 `Microsoft.AspNetCore.Components` 내부에서 트림 경고 4건이 뜹니다. 프레임워크가
+컴포넌트의 파라미터에 도달하는 길에 `instance.GetType()`을 쓰기 때문입니다. 프로브가 검사하는 게 정확히
+그 경로들이고, 뷰에서 닿을 수 있는 모든 컴포넌트는 `OpenComponent<T>`가 뿌리로 잡아둡니다 — 분석기가
+여기서 요구하는 그 어노테이션을 이미 달고 있는 쪽입니다.
+
 ## 아직 안 된 것
 
 **`TabControl`과 `NavigationView`에는 항목을 넣을 수 없습니다.** 다른 컬렉션 컨트롤은 전부

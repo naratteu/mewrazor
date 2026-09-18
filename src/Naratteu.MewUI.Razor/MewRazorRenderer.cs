@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Aprillz.MewUI;
 using Aprillz.MewUI.Controls;
 using Microsoft.AspNetCore.Components;
@@ -15,6 +16,12 @@ namespace Naratteu.MewUI.Razor;
 /// </summary>
 public sealed class MewRazorRenderer : Renderer
 {
+    /// <summary>
+    /// What a component type must keep when the app is trimmed. Blazor instantiates a component
+    /// and assigns its parameters by reflection, so nothing about the type may be trimmed away.
+    /// </summary>
+    private const DynamicallyAccessedMemberTypes Component = DynamicallyAccessedMemberTypes.All;
+
     private readonly Dictionary<int, MewNode> _nodesByComponentId = [];
     private readonly MewDispatcher _dispatcher;
     private readonly RootChildCollection _rootChildren = new();
@@ -40,7 +47,7 @@ public sealed class MewRazorRenderer : Renderer
     /// Renders <typeparamref name="TRoot"/> and returns the single element it produced.
     /// Must be called on the MewUI UI thread.
     /// </summary>
-    public TElement Mount<TRoot, TElement>()
+    public TElement Mount<[DynamicallyAccessedMembers(Component)] TRoot, TElement>()
         where TRoot : IComponent
         where TElement : Element
     {

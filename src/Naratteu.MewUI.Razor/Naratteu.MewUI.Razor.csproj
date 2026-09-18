@@ -8,6 +8,9 @@
          is the whole design, so the warning is acknowledged once here instead of at every use. -->
     <NoWarn>$(NoWarn);BL0006</NoWarn>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <!-- MewUI exists to be published with NativeAOT, so this library has to be publishable that
+         way too: the assembly is marked trimmable and the trim and AOT analyzers run here. -->
+    <IsAotCompatible>true</IsAotCompatible>
 
     <PackageId>Naratteu.MewUI.Razor</PackageId>
     <Version>0.1.0-preview.1</Version>

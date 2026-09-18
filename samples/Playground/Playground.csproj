@@ -8,6 +8,9 @@
     <!-- Razor components without any web stack: no static web assets, no MVC support. -->
     <AddRazorSupportForMvc>false</AddRazorSupportForMvc>
     <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    <!-- MewUI aims at NativeAOT, so the sample publishes that way and the trim and AOT
+         analyzers run on every build here. -->
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
