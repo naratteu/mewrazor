@@ -39,7 +39,7 @@ public sealed class MewComponentGenerator : IIncrementalGenerator
 
     /// <summary>Names owned by the component base classes.</summary>
     private static readonly ImmutableHashSet<string> ReservedNames =
-        ["Control", "NativeElement", "ChildContent"];
+        ["Control", "NativeElement", "ChildContent", "Row", "Column", "RowSpan", "ColumnSpan", "Dock"];
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
         => context.RegisterSourceOutput(context.CompilationProvider, Emit);

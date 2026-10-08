@@ -218,6 +218,18 @@ Blazor는 이걸 컴포넌트가 렌더링될 때에야 발견하고, 데스크�
 뜻합니다. 패키지에는 생성된 렌더 트리를 읽어 각 속성을 그 컴포넌트와 대조하는 애널라이저가
 들어 있어서, 같은 실수가 빌드에서 걸립니다. `<NoWarn>MEW001</NoWarn>`으로 끌 수 있습니다.
 
+패널 안에서의 배치는 MewUI에서 부착 속성이라, 특정 컨트롤이 아니라 모든 컴포넌트의 파라미터입니다.
+`MewGrid` 안에서는 `Row`, `Column`, `RowSpan`, `ColumnSpan`, `MewDockPanel` 안에서는 `Dock`을 씁니다.
+그리드의 열·행 정의는 MewUI와 같은 문자열로 받습니다:
+
+```razor
+<MewGrid Columns="440,*" Rows="2*,3*">
+    <MewListBox RowSpan="2" />
+    <MewGridView Column="1" />
+    <MewScrollViewer Row="1" Column="1" />
+</MewGrid>
+```
+
 생성된 컴포넌트는 전부 `partial`이고 `OnControlCreated`, `ApplyCustomParameters` 훅을 열어둡니다.
 메타데이터로 표현할 수 없는 것 세 가지가 그 훅으로 들어가 있습니다 — 창 크기, `MewTextBox`의
 `@bind-Value`, `MewButton`의 `Text` 축약.

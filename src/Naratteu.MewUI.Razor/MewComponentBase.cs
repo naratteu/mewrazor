@@ -17,6 +17,22 @@ public abstract class MewComponentBase : IComponent
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    // Placement is an attached property in MewUI: set on the child, read by the panel around it.
+    // It belongs to no control's own property list, so every component carries it here.
+
+    /// <summary>The row of a <c>MewGrid</c> this component sits in.</summary>
+    [Parameter] public int? Row { get; set; }
+
+    /// <summary>The column of a <c>MewGrid</c> this component sits in.</summary>
+    [Parameter] public int? Column { get; set; }
+
+    [Parameter] public int? RowSpan { get; set; }
+
+    [Parameter] public int? ColumnSpan { get; set; }
+
+    /// <summary>The edge of a <c>MewDockPanel</c> this component docks to.</summary>
+    [Parameter] public Dock? Dock { get; set; }
+
     void IComponent.Attach(RenderHandle renderHandle) => _renderHandle = renderHandle;
 
     /// <summary>
@@ -32,8 +48,15 @@ public abstract class MewComponentBase : IComponent
         parameters.SetParameterProperties(this);
 
         IsApplyingParameters = true;
-        try { ApplyParameters(); }
-        finally { IsApplyingParameters = false; }
+        try
+        {
+            ApplyParameters();
+            ApplyPlacement();
+        }
+        finally
+        {
+            IsApplyingParameters = false;
+        }
 
         _renderHandle.Render(RenderChildContent);
         return Task.CompletedTask;
@@ -42,6 +65,15 @@ public abstract class MewComponentBase : IComponent
     /// <summary>Pushes the current parameter values onto <see cref="NativeElement"/>.</summary>
     protected virtual void ApplyParameters()
     {
+    }
+
+    private void ApplyPlacement()
+    {
+        if (Row is { } row) Grid.SetRow(NativeElement, row);
+        if (Column is { } column) Grid.SetColumn(NativeElement, column);
+        if (RowSpan is { } rowSpan) Grid.SetRowSpan(NativeElement, rowSpan);
+        if (ColumnSpan is { } columnSpan) Grid.SetColumnSpan(NativeElement, columnSpan);
+        if (Dock is { } dock) DockPanel.SetDock(NativeElement, dock);
     }
 
     private void RenderChildContent(RenderTreeBuilder builder)

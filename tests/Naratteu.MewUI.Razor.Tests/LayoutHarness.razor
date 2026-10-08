@@ -1,0 +1,10 @@
+@using Aprillz.MewUI.Controls
+<MewDockPanel>
+    <MewTextBlock Dock="Dock.Top" Text="header" />
+    <MewGrid Columns="120,*" Rows="Auto,2*,*">
+        <MewTextBlock Text="corner" />
+        <MewTextBlock Row="1" Column="1" Text="cell" />
+        <MewTextBlock RowSpan="3" Text="tall" />
+        <MewTextBlock Row="2" ColumnSpan="2" Text="wide" />
+    </MewGrid>
+</MewDockPanel>

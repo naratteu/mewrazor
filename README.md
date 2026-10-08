@@ -223,6 +223,18 @@ first frame. The package ships an analyzer that reads the generated render tree 
 attribute against the component it was written on, so the same mistake fails the build instead.
 `<NoWarn>MEW001</NoWarn>` turns it off.
 
+Placement in a panel is an attached property in MewUI, so it is a parameter on every component
+rather than on any one control: `Row`, `Column`, `RowSpan`, `ColumnSpan` inside a `MewGrid`, and
+`Dock` inside a `MewDockPanel`. A grid takes its tracks as text, the way MewUI writes them:
+
+```razor
+<MewGrid Columns="440,*" Rows="2*,3*">
+    <MewListBox RowSpan="2" />
+    <MewGridView Column="1" />
+    <MewScrollViewer Row="1" Column="1" />
+</MewGrid>
+```
+
 Each generated component is `partial` with `OnControlCreated` and `ApplyCustomParameters` hooks,
 which is how the three hand-written extensions add what metadata cannot express: window sizing,
 `@bind-Value` on `MewTextBox`, and a `Text` shorthand on `MewButton`.
