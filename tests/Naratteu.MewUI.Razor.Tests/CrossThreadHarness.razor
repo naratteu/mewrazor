@@ -1,0 +1,14 @@
+@inherits HookComponent
+@{
+    var (text, setText) = UseState("start");
+
+    Set = setText;
+}
+
+<MewStackPanel>
+    <MewTextBlock Text="@text" />
+</MewStackPanel>
+
+@code {
+    public static Action<string> Set { get; set; } = _ => { };
+}

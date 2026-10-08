@@ -28,14 +28,24 @@ public sealed class MewRazorRenderer : Renderer
     private MewNode? _rootNode;
 
     public MewRazorRenderer(IServiceProvider services, ILoggerFactory loggerFactory)
-        : base(services, loggerFactory)
-        => _dispatcher = new MewDispatcher(static () =>
-            Application.IsRunning ? Application.Current.Dispatcher : null);
+        : this(services, loggerFactory, MewUiThread.Resolve)
+    {
+    }
 
     public MewRazorRenderer()
         : this(new ServiceCollection().BuildServiceProvider(), NullLoggerFactory.Instance)
     {
     }
+
+    /// <summary>Lets tests stand in for the UI thread.</summary>
+    internal MewRazorRenderer(Func<IUiThread?> resolveUiThread)
+        : this(new ServiceCollection().BuildServiceProvider(), NullLoggerFactory.Instance, resolveUiThread)
+    {
+    }
+
+    private MewRazorRenderer(IServiceProvider services, ILoggerFactory loggerFactory, Func<IUiThread?> resolveUiThread)
+        : base(services, loggerFactory)
+        => _dispatcher = new MewDispatcher(resolveUiThread);
 
     /// <remarks>
     /// The main-window factory runs before the application is marked running, so the MewUI

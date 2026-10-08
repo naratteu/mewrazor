@@ -101,6 +101,10 @@ parent owns what a row looks like:
 var (name, setName) = UseState("world");
 ```
 
+The setter can be called from any thread — after an `await` that resumed on the pool, from a
+process's output callback, from an R3 subscription. It hands the update to the UI thread itself, so
+nothing has to marshal first.
+
 `UseEffect` runs after the render reaches the control tree, and the action it returns is the
 cleanup. No dependencies means once on mount; dependencies re-run it when they change, cleaning up
 first:

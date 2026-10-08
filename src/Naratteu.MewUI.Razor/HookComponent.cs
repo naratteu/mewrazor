@@ -33,6 +33,11 @@ public abstract class HookComponent : IComponent, IHandleAfterRender, IDisposabl
     /// Declares one piece of state. The slot is identified by call order, so hooks must not
     /// run inside a conditional or a loop.
     /// </summary>
+    /// <remarks>
+    /// The setter may be called from any thread. A call off the UI thread -- an await that resumed
+    /// on the pool, a process's output callback -- is handed to the UI thread rather than run where
+    /// it was made, so no caller has to marshal first.
+    /// </remarks>
     protected (T Value, Action<T> Set) UseState<T>(T initial)
     {
         if (_cursor == _slots.Count) _slots.Add(initial);
@@ -41,10 +46,17 @@ public abstract class HookComponent : IComponent, IHandleAfterRender, IDisposabl
 
         return ((T)_slots[slot]!, next =>
         {
-            if (Equals(_slots[slot], next)) return;
-            _slots[slot] = next;
-            Render();
+            var dispatcher = _renderHandle.Dispatcher;
+            if (dispatcher.CheckAccess()) Apply(slot, next);
+            else _ = dispatcher.InvokeAsync(() => Apply(slot, next));
         });
+    }
+
+    private void Apply(int slot, object? next)
+    {
+        if (Equals(_slots[slot], next)) return;
+        _slots[slot] = next;
+        Render();
     }
 
     /// <summary>
