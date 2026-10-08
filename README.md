@@ -87,6 +87,14 @@ For a normal project instead of a single file, see [`samples/Playground`](sample
 the only difference is `<Project Sdk="Microsoft.NET.Sdk.Razor">` with
 `AddRazorSupportForMvc=false` and `StaticWebAssetsEnabled=false`.
 
+In your own app, take the package instead of the project:
+
+```bash
+dotnet add package Naratteu.MewUI.Razor --prerelease
+```
+
+or, in a file-based app, `#:package Naratteu.MewUI.Razor@0.1.0-preview.1`.
+
 ## State
 
 State is a plain local. Nothing is registered, bound, or observed:
@@ -296,6 +304,11 @@ This library builds on `Microsoft.AspNetCore.Components.RenderTree`, which Micro
 `BL0006`: not recommended outside Blazor, and subject to change between releases. That is the
 design, so the warning is suppressed once at the project level — but it is why the package pins
 its `Microsoft.AspNetCore.Components` version rather than floating.
+
+## See also
+
+[MewShell](https://github.com/naratteu/mewshell) puts command lines behind MewRazor and MewUI
+views: `UseCommand` re-runs a command when the values interpolated into it change.
 
 ## License
 

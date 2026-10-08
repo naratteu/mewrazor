@@ -87,6 +87,14 @@ Application
 차이는 `<Project Sdk="Microsoft.NET.Sdk.Razor">`에 `AddRazorSupportForMvc=false`와
 `StaticWebAssetsEnabled=false`를 붙이는 것뿐입니다.
 
+직접 만드는 앱에서는 프로젝트 대신 패키지를 쓰세요:
+
+```bash
+dotnet add package Naratteu.MewUI.Razor --prerelease
+```
+
+파일 기반 앱이라면 `#:package Naratteu.MewUI.Razor@0.1.0-preview.1`입니다.
+
 ## 상태
 
 상태는 그냥 지역 변수입니다. 등록도, 바인딩도, 관측도 없습니다:
@@ -289,6 +297,11 @@ nullable double, 구조체, 직접 쓴 컴포넌트의 파라미터, cascading �
 `BL0006`을 붙여둡니다 — Blazor 바깥에서 쓰는 것을 권장하지 않으며 릴리스마다 바뀔 수 있다는
 경고입니다. 그게 이 설계의 전제라 프로젝트 레벨에서 한 번 억제했지만, 패키지가
 `Microsoft.AspNetCore.Components` 버전을 부동으로 두지 않고 고정하는 이유이기도 합니다.
+
+## 함께 보기
+
+[MewShell](https://github.com/naratteu/mewshell)은 MewRazor·MewUI 화면 뒤에 명령줄을 붙입니다.
+`UseCommand`는 명령줄에 보간된 값이 바뀌면 그 명령을 다시 실행합니다.
 
 ## 라이선스
 
